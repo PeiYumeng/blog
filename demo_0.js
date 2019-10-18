@@ -1,9 +1,6 @@
 const fs = require('fs');
 const http = require('http');
-const titbit = require('titbit');
 
-var file = './login.html';
-fs.createReadStream(file).pipe(process.stdout);
 var server = http.createServer();
 server.on('request',function(req,res){
     console.log('request'+JSON.stringify(req.headers));  //输出请求头
@@ -14,36 +11,18 @@ server.listen(8080,function(){
     console.log('listening on %d',this.address().port)
 });
 
-async function readFile(filename,encoding = 'utf8'){
-    return new Promise((rv,rj)=>{
-        fs.readFile(filename,{encoding:encoding},(err,data)=>{
+server.on('request',function(request,response){
+		
+    var url = request.url;
+    if(url ==='/'){
+        //response.writeHead(响应状态码，响应头对象): 发送一个响应头给请求。
+        response.writeHead(200,{'Content-Type':'text/html'});
+        // 如果url=‘/’ ,读取指定文件下的html文件，渲染到页面。
+        fs.readFile('./login.html','utf-8',function(err,data){
             if(err){
-                rj(err);
-            }else{
-                rv(data);
+                throw err ;
             }
+            response.end(data);
         });
-    });
-}
-//读取html页面数据
-async function loadPage(pagename,pagedir = './login'){ //默认目录pages
-    let pagefile = `${pagedir}/${pagename}.html`;
-    return await readFile(pagefile);
-}
-var app = new titbit({
-    //开启调试模式，输出错误信息
-    debug:true,
-    //不输出负载信息
-    showLoadInfo:false,
-});
-//相当于 var router = app.router;
-var {router} = app;
-
-router.get('/',async c=>{
-    try{
-        c.res.body = await loadPage('/');
-    }catch(err){
-        c.res.body = await loadPage('404','errorpages');
-        c.res.status(404);
     }
 });
