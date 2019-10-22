@@ -1,17 +1,16 @@
 const fs = require('fs');
 const http = require('http');
-
+const url = require('url');
+const qs = require('querystring');
 var server = http.createServer();
 
-server.listen(8080,function(){
+server.listen(8083,function(){
     console.log('listening on %d',this.address().port)
 });
 server.on('request',function(req,res){
     var url = req.url;
-    console.log(url);
     var url_1 = url.split('/')[1];
     var url_2 = url.split('/')[2];
-    console.log(url_1);
     //列表页
     if(url==='/list'){
         //response.writeHead(响应状态码，响应头对象): 发送一个响应头给请求。
@@ -20,10 +19,26 @@ server.on('request',function(req,res){
             if(err){
                 throw err ;
             }    
-           res.write(data.toString());
-           res.end();
+            else{
+                if(req.method === 'GET'){
+                    var j = JSON.stringify(chapterList);
+                   // console.log(j);
+                    res.write(data.toString());
+                    // res.write(j);
+                    res.end();
+                }
+            }
         });
     }
+    if(url==='/list_update'){
+        if(req.method === 'GET'){
+            var j = JSON.stringify(chapterList);
+           // console.log(j);
+            res.write(j);
+            res.end();
+        }
+    }
+    
     //后台登录页
     if(url==='/login'){
         res.writeHead(200,{'Content-Type':'text/html'});
@@ -122,6 +137,85 @@ server.on('request',function(req,res){
            res.end();
         });
     }
+
+    //添加文章
+    if(url==='/add'){
+        var d;
+        req.on('data',function(data){
+            d = data.toString('utf8');
+            var obj = qs.parse(d);
+            var length = chapterList.length +1;
+            var date = new Date();
+            var name = obj.title;
+            var con = obj.content;
+            var o = {
+                "chapterId": length,
+                "chapterName": name,
+                "imgPath": "images/1442457564979540.jpeg",
+                "chapterDes": name,
+                "chapterContent": con,
+                "publishTimer": date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate(),
+                "author": "admin",
+                "views": 1022
+            }
+            chapterList.push(o);
+            // console.log(chapterList)
+        });
+        res.end();
+    }
+    if(url==="/ll"){
+        var j = JSON.stringify(chapterList);
+        // console.log(j);
+        res.write(j);
+        res.end();
+    }
+    //阅读更多
+    if(url.indexOf("/detail?chapterId=")==0){
+        var a = qs.parse(url,"?",null,{maxKeys:2});
+        res.writeHead(200,{'Content-Type':'text/html'});
+        fs.readFile('./chapter.html','utf-8',function(err,data){
+            if(err){
+                throw err ;
+            }    
+            else{
+                res.write(data.toString());
+            }
+           res.end();
+        });
+    }
+    if(url.indexOf("/getDetail?chapterId=")==0){
+        var a = qs.parse(url,"?",null,{maxKeys:2});
+        console.log(a.chapterId);
+        var d = chapterList[a.chapterId];
+        console.log(d);
+        var j = JSON.stringify(d);
+        res.write(j);    
+        res.end();
+    }
+    //用户登录验证
+    if(url==='/login_check'){
+        req.on('data',function(data){
+            console.log(data.toString('utf8'))
+            var a = qs.parse(data.toString('utf8'),"&",null,{maxKeys:2});
+            var name = a.username;
+            var pwd = a.pwd;
+            for(var i = 0;i<userList.length;i++){
+                if(userList[i].username===name && userList[i].pwd===pwd){
+                    res.end();
+                }
+            }
+        });
+    }
+    //删除文章
+    if(url==="/del"){
+        req.on("data",function(data){
+             var i = data.toString().split("=")[1];
+            //  console.log(i)
+            chapterList.splice(i,1);
+            console.log(chapterList);
+            res.end();
+        })
+    }
 });
 
 var chapterList = [
@@ -166,5 +260,6 @@ var chapterList = [
         "views": 102
     }
 ]
-
-
+var userList = [
+    {username: "admin", pwd: "admin"}
+]

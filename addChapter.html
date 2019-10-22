@@ -10,9 +10,9 @@
             margin: 0;
             padding: 0;
         }
-        body {
+        /* body {
             background: url(./bg.jpg) repeat;
-        }
+        } */
         table {
             border-collapse: collapse;
             width: 885px;
@@ -66,7 +66,7 @@
         .right {
             border: 1px solid white;
             margin-left: 250px;
-            background: url(./bg.jpg) repeat;
+            /* background: url(./bg.jpg) repeat; */
         }
         nav {
             width: 100%;
@@ -156,7 +156,7 @@
         <div class="left">
             <ul>
                 <li>
-                    <a href="##"  onclick="showList()">文章列表</a>
+                    <a href="http://localhost:8083/listmanager"  onclick="showList()">文章列表</a>
                 </li>
                 <li>
                     <a href="##" onclick="addChapter()">添加文章</a>
@@ -177,11 +177,10 @@
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script>
     function showList() {
-        window.location = "http://localhost:8083/listmanager/"
     }
     $("#sub").click(function() {
         $.post("http://localhost:8083/add", {"title": $("#title").val(), "content": $("#ct").html()}, function(data) {
-            window.location = "http://localhost:8083/listmanager/"
+            window.location = "http://localhost:8083/listmanager"
         })
     })
 </script>

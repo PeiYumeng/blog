@@ -14,11 +14,11 @@
 	<div class="newblog left">
         <!--左left开始-->
         <div class="oneblog">
-            <h2><a title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
+            <h2><a  id="title" title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
             <figure><img src='images/1442201163344838-lp.jpg' border='0' width='120' height='120' alt='路·过-喜欢在路上'></figure>
             <ul class="nlist">
                 <p>注定，有些路，只能一个人走；有些事，只能一个人扛。因为我喜欢在路上！走在林间小道上，一个人，晃晃悠悠，无所适从，看着那些在风中微微呻吟着的落叶，远远望去，像一群疲...</p>
-                <a title="路·过-喜欢在路上" href="/" target="_blank" class="readmore">阅读全文>></a>
+                <a title="路·过-喜欢在路上" href="#" class="readmore">阅读全文>></a>
             </ul>
             <p class="dateview">
                 <span>发布时间：2019-08-19</span>
@@ -30,11 +30,11 @@
             </p>
         </div>
         <div class="oneblog">
-            <h2><a title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
+            <h2><a  id="title" title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
             <figure><img src='images/1442642178239101-lp.jpg' border='0' width='120' height='120' alt='路·过-喜欢在路上'></figure>
             <ul class="nlist">
                 <p>注定，有些路，只能一个人走；有些事，只能一个人扛。因为我喜欢在路上！走在林间小道上，一个人，晃晃悠悠，无所适从，看着那些在风中微微呻吟着的落叶，远远望去，像一群疲...</p>
-                <a title="路·过-喜欢在路上" href="/" target="_blank" class="readmore">阅读全文>></a>
+                <a title="路·过-喜欢在路上" href="#" class="readmore">阅读全文>></a>
             </ul>
             <p class="dateview">
                 <span>发布时间：2019-08-19</span>
@@ -46,11 +46,11 @@
             </p>
         </div>
         <div class="oneblog">
-            <h2><a title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
+            <h2><a  id="title" title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
             <figure><img src='images/1442539025939884-lp.jpg' border='0' width='120' height='120' alt='路·过-喜欢在路上'></figure>
             <ul class="nlist">
                 <p>注定，有些路，只能一个人走；有些事，只能一个人扛。因为我喜欢在路上！走在林间小道上，一个人，晃晃悠悠，无所适从，看着那些在风中微微呻吟着的落叶，远远望去，像一群疲...</p>
-                <a title="路·过-喜欢在路上" href="/" target="_blank" class="readmore">阅读全文>></a>
+                <a title="路·过-喜欢在路上" href="#"class="readmore">阅读全文>></a>
             </ul>
             <p class="dateview">
                 <span>发布时间：2019-08-19</span>
@@ -62,11 +62,11 @@
             </p>
         </div>
         <div class="oneblog">
-            <h2><a title="路·过-喜欢在路上" href="/">路·过-喜欢在路上</a></h2>
+            <h2><a  id="title" title="路·过-喜欢在路上" href="/" id="title">路·过-喜欢在路上</a></h2>
             <figure><img src='images/1442457564979540.jpeg' border='0' width='120' height='120' alt='路·过-喜欢在路上'></figure>
             <ul class="nlist">
                 <p>注定，有些路，只能一个人走；有些事，只能一个人扛。因为我喜欢在路上！走在林间小道上，一个人，晃晃悠悠，无所适从，看着那些在风中微微呻吟着的落叶，远远望去，像一群疲...</p>
-                <a title="路·过-喜欢在路上" href="/" target="_blank" class="readmore">阅读全文>></a>
+                <a title="路·过-喜欢在路上" href="#"  class="readmore">阅读全文>></a>
             </ul>
             <p class="dateview">
                 <span>发布时间：2019-08-19</span>
@@ -93,6 +93,45 @@
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 <script>
-    
+    $(document).ready(function() {
+        $.get("http://localhost:8083/list_update", function(date) {
+            var arr = JSON.parse(date);
+            var name=[];
+            var chapterDes=[];
+            var img=[];
+            for(var i = 0;i<arr.length;i++){
+                name.push(arr[i].chapterName);
+                chapterDes.push(arr[i].chapterDes);
+                img.push(arr[i].imgPath);
+                $(".dateview")[i].firstElementChild.innerText = '发布时间  '+arr[i].publishTimer;
+                $(".dateview")[i].children[1].innerText = '作者  '+arr[i].author;
+                $(".dateview")[i].children[3].innerText = '浏览（'+arr[i].views+'）';
+                $(".readmore")[i].title=arr[i].chapterName;
+                $(".readmore").each(function(idx){
+                    $(this).click(function(){
+                        console.log(idx);
+                        window.location = "http://localhost:8083/detail?chapterId="+idx;
+                    });
+                })
+            } 
+            //更改文章题目
+            $(".oneblog").children("h2").each(function(idx){
+                $(this).html(name[idx])
+            })
+
+            //更改文章内容       
+            $(".nlist").each(function(idx){
+                $(this).children()[0].innerText=chapterDes[idx];
+            })
+            //更改文章图片
+            $(".oneblog").children("figure").each(function(idx){
+                $(this).children().attr('src',img[idx]);
+            })
+            //文章删除的不显示，最多显示四个oneblog
+            for(var i = arr.length;i<4;i++){
+                $(".oneblog")[i].style.display="none"
+            }
+        })
+    })
 </script>
 </html>
